@@ -44,6 +44,7 @@ import shutil
 import re
 import readline
 import threading
+import netifaces
 from signal import SIGINT, SIGTERM
 from subprocess import Popen, call, PIPE
 from sys import stdout, stdin
@@ -419,7 +420,7 @@ def DropFiles():
                 if line == "##--StopRead--##":
                     return;
                 if READSTATUS == "WRITE":
-                    open(appdir + DropFileName, "a+b").write(line[2:] + "\n")
+                    open(appdir + DropFileName, "a").write(line[2:] + "\n")
                 if READSTATUS == "START" and len(line) > 15 and str(line)[:13] == "##--FileName:":
                     DropFileName = str(line)[13:]
                     DropFileName = DropFileName
@@ -10917,10 +10918,11 @@ def CheckSSIDChr(ESSID_Name):
         ESSID_Name = ""
     return ESSID_Name
 
-
+# Проверить, существует ли программа
 def IsProgramExists(program):
     """
 	Check if program exist
+	Проверить, существует ли программа
     """
     proc = Popen(['which', program], stdout=PIPE, stderr=PIPE)
     txt = proc.communicate()
@@ -10928,7 +10930,7 @@ def IsProgramExists(program):
         return False
     if txt[0].strip() != '' and txt[1].strip() == '':
         return True
-    return not (txt[1].strip() == '' or txt[1].find('no %s in' % program) != -1)
+    return not (txt[1].strip() == '' or txt[1].decode().find('no %s in' % program) != -1)
 
 
 def DownloadFile(sURL, FileLoc, ToDisplay):
@@ -10951,8 +10953,7 @@ def CheckRequiredFiles():
     for req_file in builtins.RequiredFiles:
         if IsProgramExists(req_file): continue
         ERROR_MSG = ERROR_MSG + str(
-            printc(" ", "<$rs$>" + fcolor.SGreen + "Required file not found - " + fcolor.BRed + str(req_file) + "\n",
-                   ""))
+            printc(" ", "<$rs$>" + fcolor.SGreen + "Required file not found - " + fcolor.BRed + str(req_file) + "\n",""))
         MISSING_FILE += 1
     if MISSING_FILE != 0:
         TXT_1 = ""
@@ -10964,13 +10965,10 @@ def CheckRequiredFiles():
         printc("!!!",
                fcolor.BGreen + "The following file" + TXT_1 + " required by " + apptitle + " " + TXT_2 + " not found:- ",
                "")
-        print
-        ERROR_MSG
+        print(ERROR_MSG)
         print("")
         printc("..", "Developer does not provide any support on how you could install all these application.", "")
-        printc("..",
-               "To save the hassle, run this script on Backtrack/Kali Linux as all these required applications are already preinstalled.",
-               "")
+        printc("..","To save the hassle, run this script on Backtrack/Kali Linux as all these required applications are already preinstalled.","")
         builtins.ERRORFOUND = 1
         exit_gracefully(1)
     if IsFileDirExist(builtins.MACOUI) != "F":
@@ -11063,7 +11061,7 @@ def CreateDatabaseFiles():
         builtins.ERRORFOUND = 1
         exit_gracefully(1)
 
-
+#partly working
 def CheckAppLocation():
     import shutil
     cpath = 0
@@ -11127,16 +11125,13 @@ def CheckAppLocation():
                 result = MakeTree(newPath, "")
                 cpath = 1
     if os.stat(AppFileLocation) == 0:
-        printc("!!!", "Even application files is copy to the  to " + str(
-            appdir) + ", however it seem write access is impossible.", "")
+        printc("!!!", "Even application files is copy to the  to " + str(appdir) + ", however it seem write access is impossible.", "")
         printc("!!!", "Script will not proceed..", "")
         builtins.ERRORFOUND = 1
         exit_gracefully(1)
     if cpath == 1:
         print("")
-        printc("i",
-               fcolor.BWhite + "You can now run " + fcolor.BRed + ScriptName + fcolor.BWhite + " from " + fcolor.BRed + appdir + fcolor.BWhite + " by doing the following :",
-               "")
+        printc("i",fcolor.BWhite + "You can now run " + fcolor.BRed + ScriptName + fcolor.BWhite + " from " + fcolor.BRed + appdir + fcolor.BWhite + " by doing the following :","")
         printc(" ", fcolor.BGreen + "cd " + appdir, "")
         printc(" ", fcolor.BGreen + "./" + ScriptName, "")
         print("")
@@ -11498,7 +11493,7 @@ def CopyTree(RootSrcDir, RootDstDir, ShowDisplay):
             ti) + fcolor.BGreen + " ] file(s) copied.."
     return str(ti);
 
-
+# Получение списка интерфейсов (очень много багов)
 def GetInterfaceList(cmdMode):
     if cmdMode == "":
         cmdMode = "ALL"
@@ -11527,21 +11522,23 @@ def GetInterfaceList(cmdMode):
     builtins.StatusList = []
     builtins.UpDownList = []
     builtins.ISerialList = []
-    for line in proc.communicate()[0].split('\n'):
+    for line in proc.communicate()[0].decode().split('\n'):
         if len(line) == 0: continue
         if ord(line[0]) != 32:
-            IFACE = line[:line.find(' ')]
+            IFACE = line[:line.find(': ')]
             IFACE2 = IFACE[:2].upper()
             if IFACE2 != "ET" and IFACE2 != "LO" and IFACE2 != "VM" and IFACE2 != "PP" and IFACE2 != "AT" and IFACE2 != "EN":
+                # Вроде работает
                 ps = subprocess.Popen("iwconfig " + str(
-                    IFACE) + "| grep -i 'Mode:' | tr -s ' ' | egrep -o 'Mode:..................' | cut -d ' ' -f1 | cut -d ':' -f2",
+                    IFACE) + " | grep -i 'Mode:' | tr -s ' ' | egrep -o 'Mode:..................' | cut -d ' ' -f1 | cut -d ':' -f2",
                                       shell=True, stdout=subprocess.PIPE, stderr=open(os.devnull, 'w'))
-                MODEN = ps.stdout.read().replace("\n", "")
+                MODEN = ps.stdout.read().decode().replace("\n", "")
                 MODE = MODEN.upper()
+                # Вроде работает
                 ps = subprocess.Popen(
-                    "iwconfig " + str(IFACE) + "| grep -o 'IEEE..........................' | cut -d ' ' -f2",
+                    "iwconfig " + str(IFACE) + " | grep -o  'IEEE........' | | cut -d ' ' -f2",
                     shell=True, stdout=subprocess.PIPE)
-                IEEE = ps.stdout.read().replace("\n", "").upper().replace("802.11", "802.11 ")
+                IEEE = ps.stdout.read().decode().replace("\n", "").upper().replace("802.11", "802.11 ")
                 LANMODE = "WLAN"
             else:
                 MODE = "NIL";
@@ -11553,25 +11550,25 @@ def GetInterfaceList(cmdMode):
                 MODEN = "Loopback";
                 IEEE = "Nil";
                 LANMODE = "LO"
-            ps = subprocess.Popen("ifconfig " + str(IFACE) + " | grep 'HWaddr' | tr -s ' ' | cut -d ' ' -f5",
+            # Работает
+            ps = subprocess.Popen("ifconfig " + str(IFACE) + " | grep 'ether' | tr -s ' ' | cut -d ' ' -f3",
                                   shell=True, stdout=subprocess.PIPE)
-            MACADDR = ps.stdout.read().replace("\n", "").upper().replace("-", ":")
+            #MACADDR = netifaces.ifaddresses('eth0')[netifaces.AF_LINK][0]['addr']
+            MACADDR = ps.stdout.read().decode().replace("\n", "").upper().replace("-", ":")
             MACADDR = MACADDR[:17]
+            # Работает
             ps = subprocess.Popen("ifconfig " + str(IFACE) + " | egrep -o '([0-9]{1,3}\.){3}[0-9]{1,3}' | sed -n '1p'",
                                   shell=True, stdout=subprocess.PIPE)
-            IPADDR = ps.stdout.read().replace("\n", "").upper()
-            ps = subprocess.Popen(
-                "ifconfig " + str(IFACE) + " | grep -a -i 'inet6 addr:' | tr -s ' ' | sed -n '1p' | cut -d ' ' -f4",
-                shell=True, stdout=subprocess.PIPE)
-            IPV6ADDR = ps.stdout.read().replace("\n", "").upper()
-            ps = subprocess.Popen("ifconfig " + str(
-                IFACE) + " | grep '\<Bcast\>' | sed -n '1p' | tr -s ' '  | cut -d ' ' -f4 | cut -d ':' -f2", shell=True,
-                                  stdout=subprocess.PIPE)
-            BCAST = ps.stdout.read().replace("\n", "").upper()
-            ps = subprocess.Popen("ifconfig " + str(
-                IFACE) + " | grep '\<Mask\>' | sed -n '1p' | tr -s ' '  | cut -d ' ' -f5 | cut -d ':' -f2", shell=True,
-                                  stdout=subprocess.PIPE)
-            MASK = ps.stdout.read().replace("\n", "").upper()
+            IPADDR = ps.stdout.read().decode().replace("\n", "").upper()
+            # Работает
+            ps = subprocess.Popen("ifconfig " + str(IFACE) + " | grep -a -i 'inet6' | tr -s ' ' | sed -n '1p' | cut -d ' ' -f3",shell=True, stdout=subprocess.PIPE)
+            IPV6ADDR = ps.stdout.read().decode().replace("\n", "").upper()
+            # Работает
+            ps = subprocess.Popen("ifconfig " + str(IFACE) + " | grep 'broadcast' | sed -n '1p' | tr -s ' '  | cut -d ' ' -f7", shell=True,stdout=subprocess.PIPE)
+            BCAST = ps.stdout.read().decode().replace("\n", "").upper()
+            # Работает
+            ps = subprocess.Popen("ifconfig " + str(IFACE) + " | grep 'netmask' | sed -n '1p' | tr -s ' '  | cut -d ' ' -f5", shell=True,stdout=subprocess.PIPE)
+            MASK = ps.stdout.read().decode().replace("\n", "").upper()
             if cmdMode == "CON":
                 ps = subprocess.Popen("netstat -r | grep -a -i '" + str(
                     IFACE) + "'  | awk '{print $2}' | egrep -o '([0-9]{1,3}\.){3}[0-9]{1,3}' | sed -n '1p'", shell=True,
@@ -11580,14 +11577,16 @@ def GetInterfaceList(cmdMode):
             else:
                 GATEWAY = ""
             printd("GATEWAY : " + GATEWAY)
+            # Вроде работает
             ps = subprocess.Popen(
-                "ifconfig " + str(IFACE) + " | grep 'MTU:' | sed -n '1p' | tr -s ' ' | grep -o '.\{0,100\}MTU'",
+                "ifconfig " + str(IFACE) + " | grep 'mtu' | sed -n '1p' | tr -s ' ' | grep -o '.\{0,100\}mtu' | grep -o '<.\{0,100\}>'",
                 shell=True, stdout=subprocess.PIPE)
-            STATUS = ps.stdout.read().replace("\n", "").upper().replace(" MTU", "").lstrip().rstrip()
+            STATUS = ps.stdout.read().decode().replace("\n", "").upper().replace("<", "").replace(">", "").replace(",", " ").lstrip().rstrip()
+            # Вроде работает
             ps = subprocess.Popen("ifconfig " + str(
-                IFACE) + " | grep 'MTU:' | sed -n '1p' | tr -s ' ' | grep -o '.\{0,100\}MTU' | cut -d ' ' -f2 | grep 'UP'",
+                IFACE) + " | grep 'mtu' | sed -n '1p' | tr -s ' ' | grep -o '.\{0,100\}mtu' | grep -o '<.\{0,100\}>' | rev | cut -c 2-  | rev |  cut -c 2-  | cut -d ',' -f1 | grep 'UP'",
                                   shell=True, stdout=subprocess.PIPE)
-            Result = ps.stdout.read().replace("\n", "").upper().lstrip().rstrip()
+            Result = ps.stdout.read().decode().replace("\n", "").upper().lstrip().rstrip()
             if Result == "UP":
                 IFUP = "Up"
             else:
@@ -18406,10 +18405,10 @@ def KillAllMonitor():
 
 def GetMyMAC(IFACE):
     MACADDR = ""
-    ps = subprocess.Popen("ifconfig " + str(IFACE) + " | grep 'HWaddr' | tr -s ' ' | cut -d ' ' -f5", shell=True,
+    ps = subprocess.Popen("ifconfig " + str(IFACE) + " | grep 'ether' | tr -s ' ' | cut -d ' ' -f3", shell=True,
                           stdout=subprocess.PIPE, stderr=open(os.devnull, 'w'))
-    MACADDR = ps.stdout.read().replace("\n", "").upper().replace("-", ":")
-    ps.wait();
+    MACADDR = ps.stdout.read().decode.replace("\n", "").upper()
+    ps.wait()
     ps.stdout.close()
     MACADDR = MACADDR[:17]
     return MACADDR
