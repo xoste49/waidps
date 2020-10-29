@@ -1,4 +1,3 @@
-#! /usr/bin/python
 ##
 ## This was written for educational purpose only. Use it at your own risk.
 ## Author will be not responsible for any damage!
@@ -31,6 +30,8 @@
 #############
 ## MODULES ##
 #############
+# pip3.9 install urllib
+# apt install net-tools
 IMPORT_ERRMSG = ""
 import builtins
 import os, sys, subprocess, getopt, glob
@@ -40,6 +41,7 @@ import select
 import signal
 import random
 import urllib
+import urllib.request
 import shutil
 import re
 import readline
@@ -54,7 +56,7 @@ appver = "1.0, R.6"
 apptitle = "WAIDPS"
 appDesc = "- The Wireless Auditing, Intrusion Detection & Prevention System"
 appcreated = "28 Feb 2014"
-appupdated = "10 Oct 2014"
+appupdated = "10 Oct 2020"
 appnote = "Written By SY Chua, " + appcreated + ", Updated " + appupdated
 appdescription = "Wiresless Auditing, Intrusion Detection & Prevention System is a whole new application which is design to harvest all WiFi information (AP / Station details) in your surrounding and store as a database for reference. With the stored data, user can further lookup for specific MAC or names for detailed information of it relation to other MAC addresses. It primarily purpose is to detect wireless attacks in WEP/WPA/WPS encryption. It also comes with an analyzer and viewer which allow user to further probe and investigation on the intrusion/suspicious packets captured. Additional features such as blacklisting which allow user to monitor specific MACs/Names's activities. All information captured can also be saved into pcap files for further investigation."
 
@@ -1332,7 +1334,7 @@ def LogMonDetail(DataStr):
     tmpfile = dbdir + "tempmon.tmp"
     DelFile(tmpfile, "")
     if IsFileDirExist(builtins.MONLogfile) == "F":
-        open(builtins.MONLogfile, "a+b").write(str(DataStr) + "\n")
+        open(builtins.MONLogfile, "a").write(str(DataStr) + "\n")
 
 
 def LogMonFile(DataStr):
@@ -1340,37 +1342,37 @@ def LogMonFile(DataStr):
     DelFile(tmpfile, "")
     if IsFileDirExist(builtins.MONLogfile) != "F":
         open(builtins.MONLogfile, "w").write("Monitoring Log For BSSID " + str(builtins.ATTACK_AP_BSSID) + "\n")
-        open(builtins.MONLogfile, "a+b").write("BSSID  =" + str(builtins.ATTACK_AP_BSSID) + "\n")
+        open(builtins.MONLogfile, "a").write("BSSID  =" + str(builtins.ATTACK_AP_BSSID) + "\n")
         builtins.LOG_AP_BSSID = builtins.ATTACK_AP_BSSID
-        open(builtins.MONLogfile, "a+b").write("ESSID  =" + str(builtins.ATTACK_AP_ESSID) + "\n")
+        open(builtins.MONLogfile, "a").write("ESSID  =" + str(builtins.ATTACK_AP_ESSID) + "\n")
         builtins.LOG_AP_ESSID = builtins.ATTACK_AP_ESSID
-        open(builtins.MONLogfile, "a+b").write("CHANNEL=" + str(builtins.ATTACK_AP_CH) + "\n")
+        open(builtins.MONLogfile, "a").write("CHANNEL=" + str(builtins.ATTACK_AP_CH) + "\n")
         builtins.LOG_AP_CH = builtins.ATTACK_AP_CH
-        open(builtins.MONLogfile, "a+b").write("PRIVACY=" + str(builtins.ATTACK_AP_PRIVACY) + "\n")
+        open(builtins.MONLogfile, "a").write("PRIVACY=" + str(builtins.ATTACK_AP_PRIVACY) + "\n")
         builtins.LOG_AP_PRIVACY = builtins.ATTACK_AP_PRIVACY
-        open(builtins.MONLogfile, "a+b").write("CIPHER =" + str(builtins.ATTACK_AP_CIPHER) + "\n")
+        open(builtins.MONLogfile, "a").write("CIPHER =" + str(builtins.ATTACK_AP_CIPHER) + "\n")
         builtins.LOG_AP_CIPHER = builtins.ATTACK_AP_CIPHER
-        open(builtins.MONLogfile, "a+b").write("AUTH   =" + str(builtins.ATTACK_AP_AUTH) + "\n")
+        open(builtins.MONLogfile, "a").write("AUTH   =" + str(builtins.ATTACK_AP_AUTH) + "\n")
         builtins.LOG_AP_AUTH = builtins.ATTACK_AP_AUTH
-        open(builtins.MONLogfile, "a+b").write("CLIENTS=" + str(builtins.ATTACK_AP_CLIENT) + "\n")
+        open(builtins.MONLogfile, "a").write("CLIENTS=" + str(builtins.ATTACK_AP_CLIENT) + "\n")
         builtins.LOG_AP_CLIENT = builtins.ATTACK_AP_CLIENT
-        open(builtins.MONLogfile, "a+b").write("F.SEEN =" + str(builtins.ATTACK_AP_FS) + "\n")
+        open(builtins.MONLogfile, "a").write("F.SEEN =" + str(builtins.ATTACK_AP_FS) + "\n")
         builtins.LOG_AP_FS = builtins.ATTACK_AP_FS
-        open(builtins.MONLogfile, "a+b").write("L.SEEN =" + str(builtins.ATTACK_AP_LS) + "\n")
+        open(builtins.MONLogfile, "a").write("L.SEEN =" + str(builtins.ATTACK_AP_LS) + "\n")
         builtins.LOG_AP_LS = builtins.ATTACK_AP_LS
         SNL = str(builtins.ATTACK_AP_PWR)
         if SNL == "-127" or SNL == "-1" or SNL == "":
             SNL = "0"
 
-        open(builtins.MONLogfile, "a+b").write("H.SNL  =" + str(SNL) + "\n")
+        open(builtins.MONLogfile, "a").write("H.SNL  =" + str(SNL) + "\n")
         builtins.LOG_AP_HPWR = SNL
-        open(builtins.MONLogfile, "a+b").write("L.SNL  =" + str(SNL) + "\n")
+        open(builtins.MONLogfile, "a").write("L.SNL  =" + str(SNL) + "\n")
         builtins.LOG_AP_LPWR = SNL
-        open(builtins.MONLogfile, "a+b").write("C.SNL  =" + str(SNL) + "\n")
+        open(builtins.MONLogfile, "a").write("C.SNL  =" + str(SNL) + "\n")
         builtins.LOG_AP_PWR = SNL
-        open(builtins.MONLogfile, "a+b").write("RECORD =" + Now() + "\n")
+        open(builtins.MONLogfile, "a").write("RECORD =" + Now() + "\n")
         builtins.LOG_AP_RECORDED = Now()
-        open(builtins.MONLogfile, "a+b").write("--------END OF ACCESS POINT DETAIL--------\n")
+        open(builtins.MONLogfile, "a").write("--------END OF ACCESS POINT DETAIL--------\n")
     else:
         tmpList = []
         with open(builtins.MONLogfile, "r") as f:
@@ -1451,7 +1453,7 @@ def LogMonFile(DataStr):
                     if tmpList[0] == "RECORD ":
                         line = "RECORD =" + Now()
                         builtins.LOG_AP_RECORDED = Now()
-                open(tmpfile, "a+b").write(line + "\n")
+                open(tmpfile, "a").write(line + "\n")
         if IsFileDirExist(tmpfile) == "F":
             DelFile(builtins.MONLogfile, "")
             os.rename(tmpfile, builtins.MONLogfile)
@@ -4630,7 +4632,7 @@ def GetClientFromCSV(sFile):
             for line in f:
                 line = line.replace("\n", "").replace("\00", "")
                 if line != "":
-                    open(tmpfile, "a+b").write(str(line) + "\n")
+                    open(tmpfile, "a").write(str(line) + "\n")
                 if line.find("Station MAC, First time seen, Last time seen") != -1:
                     FoundClient = "1"
                 if FoundClient == "" and line.find(
@@ -8570,7 +8572,7 @@ def OptDictionarySetting(HeaderLine, DisplayHeader):
                     OptDictionarySetting("1", "1")
                     return
                 c += 1
-            open(DBFile7, "a+b").write(dict + "\n")
+            open(DBFile7, "a").write(dict + "\n")
             printc("i", fcolor.BWhite + "Dictionary location added...", "")
             OptDictionarySetting("1", "1")
             return
@@ -8609,7 +8611,7 @@ def OptDictionarySetting(HeaderLine, DisplayHeader):
                 Default = ""
                 if builtins.DictionaryList[c] == builtins.SELECTED_DICT:
                     Default = "DEFAULT="
-                open(DBFile7, "a+b").write(Default + (builtins.DictionaryList[c]) + "\n")
+                open(DBFile7, "a").write(Default + (builtins.DictionaryList[c]) + "\n")
                 c += 1
             printc("i", fcolor.BWhite + "Dictionary " + fcolor.BRed + str(
                 builtins.SELECTED_DICT) + fcolor.BWhite + " set as default...", "")
@@ -8656,7 +8658,7 @@ def OptDictionarySetting(HeaderLine, DisplayHeader):
                     if builtins.DictionaryList[c] != SelDict:
                         if builtins.DictionaryList[c] == builtins.SELECTED_DICT:
                             Default = "DEFAULT="
-                        open(DBFile7, "a+b").write(Default + (builtins.DictionaryList[c]) + "\n")
+                        open(DBFile7, "a").write(Default + (builtins.DictionaryList[c]) + "\n")
                     c += 1
                 printc("i", fcolor.BWhite + "Dictionary " + fcolor.BRed + str(
                     SelDict) + fcolor.BWhite + " deleted from list...", "")
@@ -9386,7 +9388,7 @@ def printc(PrintType, PrintText, PrintText2):
             PrintTypep = "   " + builtins.tabspace
         else:
             PrintTypep = "[" + PrintType + "]  "
-        open(LogFile, "a+b").write(RemoveColor(PrintTypep) + RemoveColor(str(PrintText.lstrip().rstrip())) + "\n")
+        open(LogFile, "a").write(RemoveColor(PrintTypep) + RemoveColor(str(PrintText.lstrip().rstrip())) + "\n")
     if PrintType == "x":
         if PrintText == "":
             PrintText = "Press Any Key To Continue..."
@@ -9436,11 +9438,11 @@ def printc(PrintType, PrintText, PrintText2):
         return
     if PrintType == "?":
         if PrintText2 != "":
-            usr_resp = raw_input(
+            usr_resp = input(
                 bcolor + "[" + pcolor + PrintType + bcolor + "]" + builtins.tabspace + tcolor + PrintText + " ( " + pcolor + PrintText2 + tcolor + " ) : " + fcolor.BWhite)
             return usr_resp;
         else:
-            usr_resp = raw_input(
+            usr_resp = input(
                 bcolor + "[" + pcolor + PrintType + bcolor + "]" + builtins.tabspace + tcolor + PrintText + " : " + fcolor.BWhite)
             return usr_resp;
     if PrintType == " " or PrintType == "  ":
@@ -9471,10 +9473,9 @@ def AskQuestion(QuestionText, ReplyText, ReplyType, DefaultReply, DisplayReply):
     tcolor = fcolor.BGreen
     if ReplyText != "":
         Ques = QuestionText + tcolor + " ( " + pcolor + ReplyText + tcolor + " ) : "
-        usr_resp = raw_input(
-            bcolor + "[" + pcolor + "?" + bcolor + "]" + builtins.tabspace + tcolor + Ques + fcolor.BWhite)
+        usr_resp = input(bcolor + "[" + pcolor + "?" + bcolor + "]" + builtins.tabspace + tcolor + Ques + fcolor.BWhite)
     else:
-        usr_resp = raw_input(
+        usr_resp = input(
             bcolor + "[" + pcolor + "?" + bcolor + "]" + builtins.tabspace + tcolor + QuestionText + " : " + fcolor.BWhite)
     if DefaultReply != "":
         if usr_resp == "":
@@ -9531,7 +9532,7 @@ def AskQuestion(QuestionText, ReplyText, ReplyType, DefaultReply, DisplayReply):
     if DefaultReply == "":
         if usr_resp == "":
             if ReplyText != "":
-                usr_resp = raw_input(
+                usr_resp = input(
                     bcolor + "[" + pcolor + "?" + bcolor + "]" + builtins.tabspace + tcolor + QuestionText + " ( " + pcolor + ReplyText + tcolor + " ) : " + fcolor.BWhite)
                 return usr_resp;
             else:
@@ -9927,7 +9928,7 @@ def QuestionFromList(ListTitle, ListTitleSpace, ListUse, AskQuestion, RtnType):
         "     " + scolor + str(sn) + "." + " " * remainspc + lcolor + showtext
     printl("    ", "1", "")
     DrawLine("^", fcolor.SWhite, totallen, "")
-    usr_resp = raw_input(bcolor + "[" + pcolor + "?" + bcolor + "]  " + tcolor + str(
+    usr_resp = input(bcolor + "[" + pcolor + "?" + bcolor + "]  " + tcolor + str(
         AskQuestion) + " [ " + scolor + "1" + tcolor + "-" + scolor + str(
         sn) + tcolor + " / " + scolor + "0" + fcolor.SWhite + " = Cancel" + tcolor + " ] : " + fcolor.BWhite)
     while not usr_resp.isdigit() or int(usr_resp) < 0 or int(usr_resp) > len(ListUse):
@@ -10784,7 +10785,7 @@ def exit_gracefully(code=0):
     if builtins.PrintToFile == "1":
         print
         fcolor.BGreen + "     Result Log\t: " + fcolor.SGreen + LogFile
-        open(LogFile, "a+b").write("\n\n")
+        open(LogFile, "a").write("\n\n")
     builtins.PrintToFile = "0"
     print("")
     ShutdownMonitor()
@@ -10937,7 +10938,7 @@ def DownloadFile(sURL, FileLoc, ToDisplay):
     try:
         if ToDisplay == "1":
             printc("..", "Downloading file from " + fcolor.BBlue + str(sURL), "")
-        urllib.urlretrieve(sURL, FileLoc)
+        urllib.request.urlretrieve(sURL, FileLoc)
         if IsFileDirExist(builtins.MACOUI) == "F":
             printc("i", "File successfully saved to " + FileLoc, "")
         else:
@@ -11006,49 +11007,49 @@ def CreateDatabaseFiles():
         printc(".", fcolor.BGreen + "Creating database files....", "")
         if IsFileDirExist(DBFile1) != "F":
             WriteData = "Station;Connected BSSID;AP First Seen;Client First Seen;Reported;Hotspot ESSID;Crack Date;;\n"
-            open(DBFile1, "a+b").write(WriteData)
+            open(DBFile1, "a").write(WriteData)
         if IsFileDirExist(DBFile2) != "F":
             WriteData = "BSSID;Enriched;Mode;First Seen;Last Seen;Channel;Privacy;Cipher;Authentication;Max Rate;Bit Rates;Power;GPS Lat;GPS Lon;GPS Alt;WPS;WPS Ver;Reported;ESSID;\n"
-            open(DBFile2, "a+b").write(WriteData)
+            open(DBFile2, "a").write(WriteData)
         if IsFileDirExist(DBFile3) != "F":
             WriteData = "Station;Connected BSSID;First Seen;Last Seen;Power;Reported;Connected ESSID;\n"
-            open(DBFile3, "a+b").write(WriteData)
+            open(DBFile3, "a").write(WriteData)
         if IsFileDirExist(DBFile4) != "F":
             WriteData = "Station;Reported;Probes Name;\n"
-            open(DBFile4, "a+b").write(WriteData)
+            open(DBFile4, "a").write(WriteData)
         if IsFileDirExist(DBFile5) != "F":
             WriteData = "Station;Connected BSSID;Connected ESSID;\n"
-            open(DBFile5, "a+b").write(WriteData)
+            open(DBFile5, "a").write(WriteData)
         if IsFileDirExist(DBFile6) != "F":
             WriteData = "Station;Initial BSSID;New BSSID;Reported;Initial ESSID;New ESSID;\n"
-            open(DBFile6, "a+b").write(WriteData)
+            open(DBFile6, "a").write(WriteData)
         if IsFileDirExist(CrackDB) != "F":
             WriteData = "BSSID;Encryption;Key;ESSID;HS_FILE;WPS;\n"
-            open(CrackDB, "a+b").write(WriteData)
+            open(CrackDB, "a").write(WriteData)
         if IsFileDirExist(builtins.DEFAULT_DICT) != "F":
             WriteData = "passwords\np@55w0rd!!!\n1234abcd\n1a2b3c4d5e\n12345678\n"
-            open(builtins.DEFAULT_DICT, "a+b").write(WriteData)
+            open(builtins.DEFAULT_DICT, "a").write(WriteData)
         if IsFileDirExist(DBFile7) != "F":
             WriteData = "DEFAULT=" + str(builtins.DEFAULT_DICT + "\n")
-            open(DBFile7, "a+b").write(WriteData)
+            open(DBFile7, "a").write(WriteData)
         if IsFileDirExist(DBWPS_SeqA) != "F":
             WriteData = str(builtins.WPS_SeqA).replace(";", "\x0a")
-            open(DBWPS_SeqA, "a+b").write(WriteData)
+            open(DBWPS_SeqA, "a").write(WriteData)
         if IsFileDirExist(DBWPS_SeqD) != "F":
             WriteData = str(builtins.WPS_SeqD).replace(";", "\x0a")
-            open(DBWPS_SeqD, "a+b").write(WriteData)
+            open(DBWPS_SeqD, "a").write(WriteData)
         if IsFileDirExist(DBWPS_Half) != "F":
             WriteData = str(builtins.WPS_Half).replace(";", "\x0a")
-            open(DBWPS_Half, "a+b").write(WriteData)
+            open(DBWPS_Half, "a").write(WriteData)
         if IsFileDirExist(DBWPS_Alt) != "F":
             WriteData = str(builtins.WPS_Alt).replace(";", "\x0a")
-            open(DBWPS_Alt, "a+b").write(WriteData)
+            open(DBWPS_Alt, "a").write(WriteData)
         if IsFileDirExist(DBWPS_Pos) != "F":
             WriteData = str(builtins.WPS_Pos).replace(";", "\x0a")
-            open(DBWPS_Pos, "a+b").write(WriteData)
+            open(DBWPS_Pos, "a").write(WriteData)
         if IsFileDirExist(DBWPS_PosD) != "F":
             WriteData = str(builtins.WPS_PosD).replace(";", "\x0a")
-            open(DBWPS_PosD, "a+b").write(WriteData)
+            open(DBWPS_PosD, "a").write(WriteData)
         printc(".", fcolor.BGreen + "Done....", "")
         print("")
     if os.stat(DBFile1) == 0 or os.stat(DBFile2) == 0 or os.stat(DBFile3) == 0 or os.stat(DBFile4) == 0 or os.stat(
@@ -11857,7 +11858,7 @@ def DisplayTimeStamp(cmdDisplayType, cmdTimeFormat):
 
 def RewriteCSV():
     FoundClient = ""
-    open(builtins.NewCaptured_CSV, "wb").write("")
+    open(builtins.NewCaptured_CSV, "w").write("")
     builtins.ListInfo_AllMAC = []
     if IsFileDirExist(builtins.Captured_CSV) == "F":
         DelFile(builtins.NewCaptured_CSV, 1)
@@ -11871,17 +11872,17 @@ def RewriteCSV():
                     FirstMAC = str(line).split(",")
                     FirstMAC = FirstMAC[0]
                     if len(FirstMAC) == 17:
-                        open(builtins.NewCaptured_CSVFront, "a+b").write(str(FirstMAC) + "\n")
+                        open(builtins.NewCaptured_CSVFront, "a").write(str(FirstMAC) + "\n")
                         builtins.ListInfo_AllMAC.append(str(FirstMAC))
-                open(builtins.NewCaptured_CSV, "a+b").write(line + "\n")
+                open(builtins.NewCaptured_CSV, "a").write(line + "\n")
                 if line.find("Station MAC, First time seen, Last time seen") != -1:
                     FoundClient = "1"
                 if FoundClient == "" and line.find("BSSID, First time seen, Last time seen, channel") == -1:
                     if len(line) > 20:
-                        open(builtins.SSID_CSV, "a+b").write(line + "\n")
+                        open(builtins.SSID_CSV, "a").write(line + "\n")
                 if FoundClient == "1" and line.find("Station MAC, First time seen, Last time seen") == -1:
                     if len(line) > 20:
-                        open(builtins.Client_CSV, "a+b").write(line + "\n")
+                        open(builtins.Client_CSV, "a").write(line + "\n")
         builtins.ListInfo_AllMAC_Dup = set(
             [dp for dp in builtins.ListInfo_AllMAC if builtins.ListInfo_AllMAC.count(dp) > 1])
     open(builtins.NewCaptured_Kismet, "wb").write("")
@@ -11890,7 +11891,7 @@ def RewriteCSV():
             for line in f:
                 line = line.replace("\n", "")
                 line = line.replace("\00", "")
-                open(builtins.NewCaptured_Kismet, "a+b").write(line + "\n")
+                open(builtins.NewCaptured_Kismet, "a").write(line + "\n")
 
 
 def CheckRepeat(MACAddr):
@@ -12717,14 +12718,14 @@ def RewriteIWList():
             for line in f:
                 line = line.replace("      Cell ", "\n      Cell ").replace("\n\n", "\n").replace("\00",
                                                                                                   "").lstrip().rstrip()
-                open(builtins.IWList_DUMP, "a+b").write(line + "\n")
+                open(builtins.IWList_DUMP, "a").write(line + "\n")
 
 
 def EnrichSSID():
     if builtins.FIXCHANNEL == 0:
         RewriteIWList()
     if IsFileDirExist(builtins.TMP_IWList_DUMP) == "F" and builtins.FIXCHANNEL == 0:
-        open(builtins.TMP_IWList_DUMP, "a+b").write("Cell XX - Address: XX:XX:XX:XX:XX:XX")
+        open(builtins.TMP_IWList_DUMP, "a").write("Cell XX - Address: XX:XX:XX:XX:XX:XX")
         BSSID = "";
         ESSID = "";
         Freq = "";
@@ -13710,7 +13711,7 @@ def RewriteNewPacket():
                             if CColor == fcolor.SRed:
                                 printc("x", "", "")
                     DATASTR = DT_FN + "\t" + DT_SN + "\t" + DT_Date + "\t" + DT_Duration + "\t" + DT_FType + "\t" + DT_FSubType + "\t" + DT_FCF + "\t" + DT_FProtocol + "\t" + DT_DataRate + "\t" + DT_Signal + "\t" + DT_Freq + "\t" + DT_SRCMAC + "\t" + DT_DSTMAC + "\t" + DT_SA + "\t" + DT_DA + "\t" + DT_TA + "\t" + DT_RA + "\t" + DT_BSSID + "\t" + DT_FLEN + "\t" + DT_LEN + "\t" + DT_WEPKEY + "\t" + DT_WEPIV + "\t" + DT_WEPICV + "\t" + DT_TKIPIV + "\t" + DT_ESSID + "\t" + DT_NTYPE + "\t" + DT_CMD + "\t" + DT_FLAGS + "\n"
-                    open(builtins.TSharkFileBak2, "a+b").write(DATASTR)
+                    open(builtins.TSharkFileBak2, "a").write(DATASTR)
 
 
 def AdjustMAC(sMAC):
@@ -13964,7 +13965,7 @@ def RemoveUnwantedAutoComplete():
 def GetInput():
     RemoveUnwantedAutoComplete()
     printl(fcolor.CReset, "0", "")
-    usr_resp = raw_input("CMD > ")
+    usr_resp = input("CMD > ")
     if usr_resp != "":
         return usr_resp
     else:
@@ -13977,7 +13978,7 @@ def ReadCommand():
     RefreshAutoComplete("")
     RunCmd = ""
     printl(fcolor.CReset, "0", "")
-    usr_resp = raw_input("CMD > ")
+    usr_resp = input("CMD > ")
     RemoveUnwantedAutoComplete()
     usr_resp_n = str(usr_resp).lstrip().rstrip()
     usr_resp = str(usr_resp).upper().lstrip().rstrip().replace("\n", "").replace("\r", "")
@@ -14026,7 +14027,7 @@ def ReadCommand():
         RECON_CMD = 1
         if builtins.ENCRYPTED_PASS == "":
             os.system("stty -echo")
-            password = raw_input(spacing + fcolor.BGreen + "Enter your password : ")
+            password = input(spacing + fcolor.BGreen + "Enter your password : ")
             print("")
             os.system("stty echo")
             builtins.ENCRYPTED_PASS = Hashing(password)
@@ -18071,7 +18072,7 @@ def AnalyseTShark(DisplayTitle):
                             print
                             fcolor.BGreen + "" + ColorC + str(tmplist)
                         if builtins.SHOWRESULT == 3 or builtins.SHOWRESULT == 4:
-                            open(builtins.SavedTSharkFile, "a+b").write(line + "\n")
+                            open(builtins.SavedTSharkFile, "a").write(line + "\n")
         if builtins.SHOWRESULT != 3 and builtins.SHOWRESULT != 4:
             print("")
             if RecCt != 0:
@@ -18235,7 +18236,7 @@ def AnalyseTCPDump(DisplayTitle):
                         fcolor.SWhite + "MBIT      : " + fcolor.BGreen + str(builtins.PKT_MBIT)
                         print("")
                     if builtins.SHOWRESULT == 3:
-                        open(builtins.SavedTCPDumpFile, "a+b").write(line + "\n")
+                        open(builtins.SavedTCPDumpFile, "a").write(line + "\n")
         if builtins.SHOWRESULT != 3:
             print("")
             if RecCt != 0:
@@ -18291,7 +18292,7 @@ def RunIWList():
     ps.stdout.close()
     cmdLine = "ps -eo pid | grep '" + str(builtins.IWListProc) + "'"
     ps = subprocess.Popen(cmdLine, shell=True, stdout=subprocess.PIPE)
-    readout = str(ps.stdout.read().replace("\n", ""))
+    readout = str(ps.stdout.read().decode().replace("\n", ""))
     readout = str(readout).lstrip().rstrip()
     builtins.IWListProc = str(builtins.IWListProc)
     ps.wait();
@@ -18316,7 +18317,7 @@ def RunAirodump():
     ps.stdout.close()
     cmdLine = "ps -eo pid | grep '" + str(builtins.DumpProc) + "'"
     ps = subprocess.Popen(cmdLine, shell=True, stdout=subprocess.PIPE)
-    readout = str(ps.stdout.read().replace("\n", ""))
+    readout = str(ps.stdout.read().decode().replace("\n", ""))
     readout = str(readout).lstrip().rstrip()
     builtins.DumpProc = str(builtins.DumpProc)
     ps.wait();
@@ -18407,7 +18408,7 @@ def GetMyMAC(IFACE):
     MACADDR = ""
     ps = subprocess.Popen("ifconfig " + str(IFACE) + " | grep 'ether' | tr -s ' ' | cut -d ' ' -f3", shell=True,
                           stdout=subprocess.PIPE, stderr=open(os.devnull, 'w'))
-    MACADDR = ps.stdout.read().decode.replace("\n", "").upper()
+    MACADDR = ps.stdout.read().decode().replace("\n", "").upper()
     ps.wait()
     ps.stdout.close()
     MACADDR = MACADDR[:17]
@@ -18583,9 +18584,9 @@ def EnterUserPassword(cmd):
             printc("!!!", "At present, there is no password for your encrypted data.", "")
             printc("!!!", "If you forgot your password, all encrypted data will be gone..", "")
     os.system("stty -echo")
-    password = raw_input(tabspacefull + fcolor.BGreen + "Enter your password : ")
+    password = input(tabspacefull + fcolor.BGreen + "Enter your password : ")
     print("")
-    password2 = raw_input(tabspacefull + fcolor.BGreen + "Confirm password    : ")
+    password2 = input(tabspacefull + fcolor.BGreen + "Confirm password    : ")
     print("")
     os.system("stty echo")
     print("")
@@ -18610,7 +18611,7 @@ def ReadCommandHistory():
         with open(builtins.CommandHistory, "r") as f:
             for line in f:
                 if len(line) > 2:
-                    open(rwf, "a+b").write(line)
+                    open(rwf, "a").write(line)
         DelFile(builtins.CommandHistory, "")
         os.rename(rwf, builtins.CommandHistory)
         readline.read_history_file(builtins.CommandHistory)
@@ -18874,7 +18875,7 @@ def WriteAccessPointDB():
                     WriteData = WriteData + str(ListInfo_WPSVer[x]) + str(col)
                     WriteData = WriteData + str(Now()) + str(col)
                     WriteData = WriteData + str(ListInfo_ESSID[x]) + str(col) + "\n"
-                    open(DBFile2, "a+b").write(WriteData)
+                    open(DBFile2, "a").write(WriteData)
         x += 1
 
 
@@ -18914,7 +18915,7 @@ def WriteAllStationDB():
                         WriteData = str(ListInfo_STATION[x]) + str(col)
                         WriteData = WriteData + str(ListInfo_CBSSID[x]) + str(col)
                         WriteData = WriteData + str(ESSID) + str(col) + "\n"
-                        open(DBFile5, "a+b").write(WriteData)
+                        open(DBFile5, "a").write(WriteData)
                 f.close()
             if ListInfo_STATION[x] != "":
                 SkipWrite = 0
@@ -18940,7 +18941,7 @@ def WriteAllStationDB():
                         WriteData = WriteData + str(ListInfo_CBestQuality[x]) + str(col)
                         WriteData = WriteData + str(Now()) + str(col)
                         WriteData = WriteData + str(ESSID) + str(col) + "\n"
-                        open(DBFile3, "a+b").write(WriteData)
+                        open(DBFile3, "a").write(WriteData)
                 f.close()
             if ListInfo_PROBE[x] != "":
                 tmpProbeList = []
@@ -18967,7 +18968,7 @@ def WriteAllStationDB():
                                 WriteData = str(ListInfo_STATION[x]) + str(col)
                                 WriteData = WriteData + str(Now()) + str(col)
                                 WriteData = WriteData + str(ProbeName) + str(col) + "\n"
-                                open(DBFile4, "a+b").write(WriteData)
+                                open(DBFile4, "a").write(WriteData)
                         f.close()
                     y += 1
         x += 1
@@ -20155,7 +20156,7 @@ def CheckDiffBSSIDConnection():
                             WriteData = str(ListInfo_STATION[x]) + str(col) + str(ConnectedBSSID) + str(col) + str(
                                 ListInfo_FirstSeen[y]) + str(col) + str(ListInfo_CFirstSeen[x]) + str(col) + str(
                                 Now()) + str(col) + str(ListInfo_ESSID[y]) + str(col) + "\n"
-                            open(DBFile1, "a+b").write(WriteData)
+                            open(DBFile1, "a").write(WriteData)
                     y = len(ListInfo_BSSID)
                 y += 1
         if ListInfo_CBSSIDPrev[x] != ListInfo_CBSSID[x] and CheckWhitelist(ListInfo_STATION[x]) == "":
@@ -20326,7 +20327,7 @@ def WriteSwitchedAP(StnMAC, PrevBSSID, NewBSSID, PrevESSID, NewESSID):
             WriteData = WriteData + str(Now()) + str(col)
             WriteData = WriteData + str(PrevESSID) + str(col)
             WriteData = WriteData + str(NewESSID) + str(col) + "\n"
-            open(DBFile6, "a+b").write(WriteData)
+            open(DBFile6, "a").write(WriteData)
 
 
 def WriteCautiousLog(StrVal):
@@ -20334,7 +20335,7 @@ def WriteCautiousLog(StrVal):
     if IsFileDirExist(CautiousLog) != "F":
         open(CautiousLog, "w").write("")
     if IsFileDirExist(CautiousLog) == "F":
-        open(CautiousLog, "a+b").write(StrVal)
+        open(CautiousLog, "a").write(StrVal)
 
 
 def WriteAttackLog(StrVal):
@@ -20342,7 +20343,7 @@ def WriteAttackLog(StrVal):
     if IsFileDirExist(AttackLog) != "F":
         open(AttackLog, "w").write("")
     if IsFileDirExist(AttackLog) == "F":
-        open(AttackLog, "a+b").write(StrVal)
+        open(AttackLog, "a").write(StrVal)
 
 
 def WriteSuspiciousLog(StrVal):
@@ -20353,7 +20354,7 @@ def WriteSuspiciousLog(StrVal):
     if IsFileDirExist(SuspiciousLog) != "F":
         open(SuspiciousLog, "w").write("")
     if IsFileDirExist(SuspiciousLog) == "F":
-        open(SuspiciousLog, "a+b").write(StrVal)
+        open(SuspiciousLog, "a").write(StrVal)
 
 
 def ExtractClient():
@@ -21174,7 +21175,7 @@ def GetWhitelist():
                         line = line[8:]
                         builtins.WhiteNameList.append(line)
     else:
-        open(WhitelistFile, "a+b").write("")
+        open(WhitelistFile, "a").write("")
 
 
 def SaveWhitelist():
@@ -21182,11 +21183,11 @@ def SaveWhitelist():
         open(WhitelistFile, "w").write("")
         x = 0
         while x < len(builtins.WhiteMACList):
-            open(WhitelistFile, "a+b").write("MACID : " + str(builtins.WhiteMACList[x]) + "\n")
+            open(WhitelistFile, "a").write("MACID : " + str(builtins.WhiteMACList[x]) + "\n")
             x = x + 1
         x = 0
         while x < len(builtins.WhiteNameList):
-            open(WhitelistFile, "a+b").write("ESSID : " + str(builtins.WhiteNameList[x]) + "\n")
+            open(WhitelistFile, "a").write("ESSID : " + str(builtins.WhiteNameList[x]) + "\n")
             x = x + 1
 
 
@@ -21208,7 +21209,7 @@ def GetMonitoringMAC():
                         line = line[8:]
                         builtins.MonitoringNameList.append(line)
     else:
-        open(MonitorMACfile, "a+b").write("")
+        open(MonitorMACfile, "a").write("")
 
 
 def DisplayMonitoringMAC():
@@ -21232,11 +21233,11 @@ def SaveMonitoringMAC():
         open(MonitorMACfile, "w").write("")
         x = 0
         while x < len(builtins.MonitoringMACList):
-            open(MonitorMACfile, "a+b").write("MACID : " + str(builtins.MonitoringMACList[x]) + "\n")
+            open(MonitorMACfile, "a").write("MACID : " + str(builtins.MonitoringMACList[x]) + "\n")
             x = x + 1
         x = 0
         while x < len(builtins.MonitoringNameList):
-            open(MonitorMACfile, "a+b").write("ESSID : " + str(builtins.MonitoringNameList[x]) + "\n")
+            open(MonitorMACfile, "a").write("ESSID : " + str(builtins.MonitoringNameList[x]) + "\n")
             x = x + 1
 
 
@@ -21410,47 +21411,47 @@ def CheckMonitoringMAC():
 
 def SaveConfig(CMD):
     open(ConfigFile, "w").write("WAIDPS Configuration" + "\n")
-    ##    open(ConfigFile,"a+b").write("Unique HWIdentifier="+str(builtins.HWID) + "\n")
-    ##    open(ConfigFile,"a+b").write("USERNAME="+str(builtins.USERNAME) + "\n")
-    ##    open(ConfigFile,"a+b").write("USERHASH="+str(builtins.USERHASH) + "\n")
-    ##    open(ConfigFile,"a+b").write("USERPASS="+str(builtins.USERPASS) + "\n")
-    open(ConfigFile, "a+b").write("DISABLE_BREAK=" + str(DISABLE_BREAK) + "\n")
-    open(ConfigFile, "a+b").write("LOAD_WPS=" + str(LOAD_WPS) + "\n")
-    open(ConfigFile, "a+b").write("LOAD_IWLIST=" + str(LOAD_IWLIST) + "\n")
-    open(ConfigFile, "a+b").write("LOAD_PKTCAPTURE=" + str(LOAD_PKTCAPTURE) + "\n")
-    open(ConfigFile, "a+b").write("SAVE_MONPKT=" + str(SAVE_MONPKT) + "\n")
-    open(ConfigFile, "a+b").write("SAVE_ATTACKPKT=" + str(SAVE_ATTACKPKT) + "\n")
-    open(ConfigFile, "a+b").write("SHOW_CONNECTION_ALERT=" + str(SHOW_CONNECTION_ALERT) + "\n")
-    open(ConfigFile, "a+b").write("SHOW_SUSPICIOUS_LISTING=" + str(SHOW_SUSPICIOUS_LISTING) + "\n")
-    open(ConfigFile, "a+b").write("SHOW_IDS=" + str(SHOW_IDS) + "\n")
-    open(ConfigFile, "a+b").write("HIDE_INACTIVE_SSID=" + str(HIDE_INACTIVE_SSID) + "\n")
-    open(ConfigFile, "a+b").write("HIDE_INACTIVE_STN=" + str(HIDE_INACTIVE_STN) + "\n")
-    open(ConfigFile, "a+b").write("HIDE_AFTER_MIN=" + str(HIDE_AFTER_MIN) + "\n")
-    open(ConfigFile, "a+b").write("TOTALLY_REMOVE_MIN=" + str(TOTALLY_REMOVE_MIN) + "\n")
-    open(ConfigFile, "a+b").write("NETWORK_VIEW=" + str(NETWORK_VIEW) + "\n")
-    open(ConfigFile, "a+b").write("ALERTSOUND=" + str(ALERTSOUND) + "\n")
-    open(ConfigFile, "a+b").write("TIMEOUT=" + str(builtins.TIMEOUT) + "\n")
-    open(ConfigFile, "a+b").write("TIMES_BEFORE_UPDATE_AP_DB=" + str(TIMES_BEFORE_UPDATE_AP_DB) + "\n")
-    open(ConfigFile, "a+b").write("TIMES_BEFORE_UPDATE_STN_DB=" + str(TIMES_BEFORE_UPDATE_STN_DB) + "\n")
-    open(ConfigFile, "a+b").write("THRESHOLD_DATA86=" + str(builtins.THRESHOLD_DATA86) + "\n")
-    open(ConfigFile, "a+b").write("THRESHOLD_DATAARP=" + str(builtins.THRESHOLD_DATAARP) + "\n")
-    open(ConfigFile, "a+b").write("THRESHOLD_DATA94=" + str(builtins.THRESHOLD_DATA94) + "\n")
-    open(ConfigFile, "a+b").write("THRESHOLD_DATA98=" + str(builtins.THRESHOLD_DATA98) + "\n")
-    open(ConfigFile, "a+b").write("HRESHOLD_ASSOC=" + str(builtins.THRESHOLD_ASSOC) + "\n")
-    open(ConfigFile, "a+b").write("THRESHOLD_DISASSOC=" + str(builtins.THRESHOLD_DISASSOC) + "\n")
-    open(ConfigFile, "a+b").write("THRESHOLD_REASSOC=" + str(builtins.THRESHOLD_REASSOC) + "\n")
-    open(ConfigFile, "a+b").write("THRESHOLD_AUTH=" + str(builtins.THRESHOLD_AUTH) + "\n")
-    open(ConfigFile, "a+b").write("THRESHOLD_DEAUTH=" + str(builtins.THRESHOLD_DEAUTH) + "\n")
-    open(ConfigFile, "a+b").write("THRESHOLD_DEAUTH_AC=" + str(builtins.THRESHOLD_DEAUTH_AC) + "\n")
-    open(ConfigFile, "a+b").write("THRESHOLD_EAPOL_STD=" + str(builtins.THRESHOLD_EAPOL_STD) + "\n")
-    open(ConfigFile, "a+b").write("THRESHOLD_EAPOL_START=" + str(builtins.THRESHOLD_EAPOL_START) + "\n")
-    open(ConfigFile, "a+b").write("THRESHOLD_WPS=" + str(builtins.THRESHOLD_WPS) + "\n")
-    open(ConfigFile, "a+b").write("THRESHOLD_QOS=" + str(builtins.THRESHOLD_QOS) + "\n")
-    open(ConfigFile, "a+b").write("THRESHOLD=" + str(builtins.THRESHOLD) + "\n")
-    open(ConfigFile, "a+b").write("SENSITIVITY_LVL=" + str(builtins.SENSITIVITY_LVL) + "\n")
+    ##    open(ConfigFile,"a").write("Unique HWIdentifier="+str(builtins.HWID) + "\n")
+    ##    open(ConfigFile,"a").write("USERNAME="+str(builtins.USERNAME) + "\n")
+    ##    open(ConfigFile,"a").write("USERHASH="+str(builtins.USERHASH) + "\n")
+    ##    open(ConfigFile,"a").write("USERPASS="+str(builtins.USERPASS) + "\n")
+    open(ConfigFile, "a").write("DISABLE_BREAK=" + str(DISABLE_BREAK) + "\n")
+    open(ConfigFile, "a").write("LOAD_WPS=" + str(LOAD_WPS) + "\n")
+    open(ConfigFile, "a").write("LOAD_IWLIST=" + str(LOAD_IWLIST) + "\n")
+    open(ConfigFile, "a").write("LOAD_PKTCAPTURE=" + str(LOAD_PKTCAPTURE) + "\n")
+    open(ConfigFile, "a").write("SAVE_MONPKT=" + str(SAVE_MONPKT) + "\n")
+    open(ConfigFile, "a").write("SAVE_ATTACKPKT=" + str(SAVE_ATTACKPKT) + "\n")
+    open(ConfigFile, "a").write("SHOW_CONNECTION_ALERT=" + str(SHOW_CONNECTION_ALERT) + "\n")
+    open(ConfigFile, "a").write("SHOW_SUSPICIOUS_LISTING=" + str(SHOW_SUSPICIOUS_LISTING) + "\n")
+    open(ConfigFile, "a").write("SHOW_IDS=" + str(SHOW_IDS) + "\n")
+    open(ConfigFile, "a").write("HIDE_INACTIVE_SSID=" + str(HIDE_INACTIVE_SSID) + "\n")
+    open(ConfigFile, "a").write("HIDE_INACTIVE_STN=" + str(HIDE_INACTIVE_STN) + "\n")
+    open(ConfigFile, "a").write("HIDE_AFTER_MIN=" + str(HIDE_AFTER_MIN) + "\n")
+    open(ConfigFile, "a").write("TOTALLY_REMOVE_MIN=" + str(TOTALLY_REMOVE_MIN) + "\n")
+    open(ConfigFile, "a").write("NETWORK_VIEW=" + str(NETWORK_VIEW) + "\n")
+    open(ConfigFile, "a").write("ALERTSOUND=" + str(ALERTSOUND) + "\n")
+    open(ConfigFile, "a").write("TIMEOUT=" + str(builtins.TIMEOUT) + "\n")
+    open(ConfigFile, "a").write("TIMES_BEFORE_UPDATE_AP_DB=" + str(TIMES_BEFORE_UPDATE_AP_DB) + "\n")
+    open(ConfigFile, "a").write("TIMES_BEFORE_UPDATE_STN_DB=" + str(TIMES_BEFORE_UPDATE_STN_DB) + "\n")
+    open(ConfigFile, "a").write("THRESHOLD_DATA86=" + str(builtins.THRESHOLD_DATA86) + "\n")
+    open(ConfigFile, "a").write("THRESHOLD_DATAARP=" + str(builtins.THRESHOLD_DATAARP) + "\n")
+    open(ConfigFile, "a").write("THRESHOLD_DATA94=" + str(builtins.THRESHOLD_DATA94) + "\n")
+    open(ConfigFile, "a").write("THRESHOLD_DATA98=" + str(builtins.THRESHOLD_DATA98) + "\n")
+    open(ConfigFile, "a").write("HRESHOLD_ASSOC=" + str(builtins.THRESHOLD_ASSOC) + "\n")
+    open(ConfigFile, "a").write("THRESHOLD_DISASSOC=" + str(builtins.THRESHOLD_DISASSOC) + "\n")
+    open(ConfigFile, "a").write("THRESHOLD_REASSOC=" + str(builtins.THRESHOLD_REASSOC) + "\n")
+    open(ConfigFile, "a").write("THRESHOLD_AUTH=" + str(builtins.THRESHOLD_AUTH) + "\n")
+    open(ConfigFile, "a").write("THRESHOLD_DEAUTH=" + str(builtins.THRESHOLD_DEAUTH) + "\n")
+    open(ConfigFile, "a").write("THRESHOLD_DEAUTH_AC=" + str(builtins.THRESHOLD_DEAUTH_AC) + "\n")
+    open(ConfigFile, "a").write("THRESHOLD_EAPOL_STD=" + str(builtins.THRESHOLD_EAPOL_STD) + "\n")
+    open(ConfigFile, "a").write("THRESHOLD_EAPOL_START=" + str(builtins.THRESHOLD_EAPOL_START) + "\n")
+    open(ConfigFile, "a").write("THRESHOLD_WPS=" + str(builtins.THRESHOLD_WPS) + "\n")
+    open(ConfigFile, "a").write("THRESHOLD_QOS=" + str(builtins.THRESHOLD_QOS) + "\n")
+    open(ConfigFile, "a").write("THRESHOLD=" + str(builtins.THRESHOLD) + "\n")
+    open(ConfigFile, "a").write("SENSITIVITY_LVL=" + str(builtins.SENSITIVITY_LVL) + "\n")
     if builtins.SELECTED_DICT == "":
         builtins.SELECTED_DICT = builtins.DEFAULT_DICT
-    open(ConfigFile, "a+b").write("DICTIONARY=" + str(builtins.SELECTED_DICT) + "\n")
+    open(ConfigFile, "a").write("DICTIONARY=" + str(builtins.SELECTED_DICT) + "\n")
     if CMD != "":
         printc("i", fcolor.BRed + "Application Setting Saved...", "")
 
@@ -21728,15 +21729,15 @@ def SavePktConfig():
     open(PktConfig, "w").write("Captured Packet Analysis Configuration" + "\n")
     x = 0
     while x < len(builtins.ANALYSIS_SEARCH):
-        open(PktConfig, "a+b").write("ANALYSIS_SEARCH=" + str(builtins.ANALYSIS_SEARCH[x]) + "\n")
+        open(PktConfig, "a").write("ANALYSIS_SEARCH=" + str(builtins.ANALYSIS_SEARCH[x]) + "\n")
         x += 1
     x = 0
     while x < len(builtins.ANALYSIS_IGNORE):
-        open(PktConfig, "a+b").write("ANALYSIS_IGNORE=" + str(builtins.ANALYSIS_IGNORE[x]) + "\n")
+        open(PktConfig, "a").write("ANALYSIS_IGNORE=" + str(builtins.ANALYSIS_IGNORE[x]) + "\n")
         x += 1
     x = 0
     while x < len(builtins.ANALYSIS_MAC):
-        open(PktConfig, "a+b").write("ANALYSIS_MAC=" + str(builtins.ANALYSIS_MAC[x]) + "\n")
+        open(PktConfig, "a").write("ANALYSIS_MAC=" + str(builtins.ANALYSIS_MAC[x]) + "\n")
         x += 1
 
 
